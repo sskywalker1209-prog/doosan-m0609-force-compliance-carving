@@ -1,3 +1,12 @@
+> **이 저장소에 대해** — Doosan Robotics ROKEY BOOT CAMP 9기 팀 프로젝트 원본 [suuuhululu/robotic-curved-surface-carving](https://github.com/suuuhululu/robotic-curved-surface-carving)의 포크입니다. 아래 원본 README 는 팀 전체 프로젝트 설명이고, 이 안내 절만 이시율이 추가했습니다.
+>
+> - **프로젝트**: Doosan M0609 Force/Compliance 기반 곡면 조각 자동화 (2026.09.14 ~ 09.30). 4인 팀
+> - **시연 영상(별도 보존본)**: [Google Drive](https://drive.google.com/file/d/1DPxE7wIoRh9BAg-tyu3-uerkrwomn3Xp/view?usp=sharing)
+> - **이시율 담당**: 로봇 제어(측정 · 조각 실행) — 접촉 측정, 두산 로봇 API 어댑터(이동 · 힘 · 순응 · 정지), 조각 실행, 홈 복귀. 측정 결과를 경로 입력으로 전달하고, 팀원이 만든 경로를 실제 로봇 동작으로 연결. 실기 시험과 접촉 판정 파라미터 조정
+> - **팀원 담당**: 공정 노드 · 상태 관리, 경로 생성(이미지 → 3D 조각 경로), HMI · 통합(팀장)
+> - **함께 해결**: 위치만으로 접촉 판단이 어려워 조기 정지 · 지나침 · 거짓 접촉 발생 → 동작을 구간별로 나눠 원인을 찾고 힘 신호와 위치를 함께 비교하도록 접촉 조건 수정, 실기 반복 확인
+
+---
 
 # 새김 (Saegim)
 
