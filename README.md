@@ -2,9 +2,23 @@
 >
 > - **프로젝트**: Doosan M0609 Force/Compliance 기반 곡면 조각 자동화 (2026.09.14 ~ 09.30). 4인 팀
 > - **시연 영상(별도 보존본)**: [Google Drive](https://drive.google.com/file/d/1DPxE7wIoRh9BAg-tyu3-uerkrwomn3Xp/view?usp=sharing)
-> - **이시율 담당**: 로봇 제어(측정 · 조각 실행) — 접촉 측정, 두산 로봇 API 어댑터(이동 · 힘 · 순응 · 정지), 조각 실행, 홈 복귀. 측정 결과를 경로 입력으로 전달하고, 팀원이 만든 경로를 실제 로봇 동작으로 연결. 실기 시험과 접촉 판정 파라미터 조정
+> - **이시율 담당**: 로봇 제어(측정 · 조각 실행) — 접촉 측정, 두산 로봇 API 어댑터(이동 · 힘 · 순응 · 정지), 조각 실행, 조각 뒤 홈 복귀 동작(최종 홈 복귀 계획기는 팀원). 측정 결과를 경로 입력으로 전달하고, 팀원이 만든 경로를 실제 로봇 동작으로 연결. 실기 시험과 접촉 판정 파라미터 조정
 > - **팀원 담당**: 공정 노드 · 상태 관리, 경로 생성(이미지 → 3D 조각 경로), HMI · 통합(팀장)
 > - **함께 해결**: 위치만으로 접촉 판단이 어려워 조기 정지 · 지나침 · 거짓 접촉 발생 → 동작을 구간별로 나눠 원인을 찾고 힘 신호와 위치를 함께 비교하도록 접촉 조건 수정, 실기 반복 확인
+>
+> **이 포크에서 내 담당 코드 보기** — 팀 프로젝트이며, 아래 표 밖의 공정 노드 · 상태 관리, 경로 생성, HMI · 서버 · ROS 게이트웨이, 실물 준비 · 통합 보강은 팀원 작업입니다. 커밋 이력은 원본 그대로입니다.
+>
+> | 파일 (`c2_process/c2_process/`) | 역할 | 대표 커밋 |
+> |---|---|---|
+> | [`measurement_robot_adapter.py`](ws_cobot_pjt/ws_cobot1/src/c2_process/c2_process/measurement_robot_adapter.py) | 양초 윗면 · 옆면 접촉 측정 실행 — 힘 기준 접촉 판정, 이동 중 힘 상한 감시, 측정 전 경로 검사 | [`5ff7c5f`](https://github.com/sskywalker1209-prog/doosan-m0609-force-compliance-carving/commit/5ff7c5f) [`4a71438`](https://github.com/sskywalker1209-prog/doosan-m0609-force-compliance-carving/commit/4a71438) [`de35e4c`](https://github.com/sskywalker1209-prog/doosan-m0609-force-compliance-carving/commit/de35e4c) |
+> | [`robot_adapter.py`](ws_cobot_pjt/ws_cobot1/src/c2_process/c2_process/robot_adapter.py) | 두산 로봇 API 어댑터 — 이동 · 스플라인 · 접촉 탐색 · 정지 · 힘 읽기, 순응 · 힘 유지 호출 | [`e347e5f`](https://github.com/sskywalker1209-prog/doosan-m0609-force-compliance-carving/commit/e347e5f) [`54230b6`](https://github.com/sskywalker1209-prog/doosan-m0609-force-compliance-carving/commit/54230b6) |
+> | [`tool_calibration.py`](ws_cobot_pjt/ws_cobot1/src/c2_process/c2_process/tool_calibration.py) | 드릴 끝(TCP) 3점 측정 · 1점 확인 보정 | [`b05b42c`](https://github.com/sskywalker1209-prog/doosan-m0609-force-compliance-carving/commit/b05b42c) [`e57b200`](https://github.com/sskywalker1209-prog/doosan-m0609-force-compliance-carving/commit/e57b200) |
+> | [`engraving.py`](ws_cobot_pjt/ws_cobot1/src/c2_process/c2_process/engraving.py) | 조각 실행기 — 검사된 계획의 접근 · 조각 · 이탈 실행. 고정 깊이(`fixed_depth`)와 힘 접촉(`force_touch`) 두 방식 분기 (팀원과 공동 작성) | [`7961dcf`](https://github.com/sskywalker1209-prog/doosan-m0609-force-compliance-carving/commit/7961dcf) [`2806cab`](https://github.com/sskywalker1209-prog/doosan-m0609-force-compliance-carving/commit/2806cab) |
+> | [`process_state_observer.py`](ws_cobot_pjt/ws_cobot1/src/c2_process/c2_process/process_state_observer.py) | 공정 준비 검사에 쓰는 로봇 상태 · 제어권 관측 공급 | [`b89792b`](https://github.com/sskywalker1209-prog/doosan-m0609-force-compliance-carving/commit/b89792b) |
+> | [`joint_check.py`](ws_cobot_pjt/ws_cobot1/src/c2_process/c2_process/joint_check.py) | 경로점 IK · 관절 한계 · J6 누적 검사 (일부) | [`c1ca98d`](https://github.com/sskywalker1209-prog/doosan-m0609-force-compliance-carving/commit/c1ca98d) |
+>
+> - **조각 방식**: 힘 · 순응 제어로 표면을 잡고 깊이를 맞추는 방식과, 계산된 경로를 고정 깊이로 따라가는 방식을 함께 개발했습니다. 힘으로 표면을 잡고 곡률을 따라 긋는 방식은 9/18 실기로 시험했고([실기 기록](ws_cobot_pjt/docs/daily/2026-09-18-candle.md)), 조각 중 힘 유지 구현([`54230b6`](https://github.com/sskywalker1209-prog/doosan-m0609-force-compliance-carving/commit/54230b6))은 일정상 실기 검증을 마치지 못했습니다. 최종 실물 실행은 고정 깊이 방식입니다([첫 실기 통합 기록](ws_cobot_pjt/docs/evidence/real_integration_20260923/README.md), 설정 `contact_mode: fixed_depth`). 힘 제어는 최종 흐름에서 접촉 측정과 이동 중 힘 감시에 쓰였습니다.
+> - **시험**: 측정 · 어댑터 · 조각 계획 mock 시험은 [`c2_process/test/`](ws_cobot_pjt/ws_cobot1/src/c2_process/test) 에 있습니다(팀원 시험 포함).
 
 ---
 
